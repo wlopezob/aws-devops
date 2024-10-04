@@ -28,6 +28,16 @@ resource "aws_subnet" "sb-private-01" {
   }
 }
 
+resource "aws_subnet" "sb-private-02" {
+  vpc_id            = aws_vpc.vpc-main.id
+  cidr_block        = var.cidr_block-sb-private02
+  availability_zone = var.az-private02
+
+  tags = {
+    Name = "${var.project_name_prefix}-sb-${var.name-az-private02}"
+  }
+}
+
 ### IGW ###
 resource "aws_internet_gateway" "igw-main" {
   vpc_id = aws_vpc.vpc-main.id
@@ -84,5 +94,10 @@ resource "aws_route_table_association" "rta-public-01" {
 
 resource "aws_route_table_association" "rta-private-01" {
   subnet_id      = aws_subnet.sb-private-01.id
+  route_table_id = aws_route_table.rt-private.id
+}
+
+resource "aws_route_table_association" "rta-private-02" {
+  subnet_id      = aws_subnet.sb-private-02.id
   route_table_id = aws_route_table.rt-private.id
 }

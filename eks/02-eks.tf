@@ -9,7 +9,7 @@ resource "aws_eks_cluster" "eks-cluster" {
       aws_subnet.sb-private-02.id
     ]
     endpoint_private_access = true
-    endpoint_public_access  = false
+    endpoint_public_access  = true
   }
   version = var.cluster_version
   access_config {

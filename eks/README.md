@@ -1,44 +1,71 @@
 # 01-vpc.tf
-This Terraform file defines the core networking infrastructure for your AWS environment. It creates:
-- **A Virtual Private Cloud (VPC):** This is the isolated network environment where your resources will reside.
-- **Public Subnet:** A subnet within the VPC that is publicly accessible, typically used for resources like load balancers and web servers.
-- **Private Subnet:** A subnet within the VPC that is not publicly accessible, typically used for resources like databases and application servers.
-## Resources
+## Description
+This Terraform file defines the core networking infrastructure for the project, including:
+- **Virtual Private Cloud (VPC)**: Provides an isolated network environment within AWS.
+- **Subnets**: Segment the VPC into public and private networks for different resources.
+- **Route Tables**: Control traffic flow between subnets and to the internet.
+- **Internet Gateway**: Enables internet connectivity for the public subnet.
+- **NAT Gateway**: Allows private resources to access the internet without being directly exposed.
+## Resources Defined
 ### `aws_vpc`
-- **`vpc-main`:** Creates the main VPC with the specified CIDR block.
-- **`cidr_block`:** Defines the IP address range for the VPC (defined in `variables.tf`).
-- **`enable_dns_support`:** Enables DNS resolution within the VPC.
-- **`enable_dns_hostnames`:** Allows instances to be addressed by their hostnames.
-- **`tags`:** Applies tags to the VPC for identification and organization (uses a project name prefix defined in `variables.tf`).
+Creates a VPC with a specified CIDR block and enables DNS support.
+- **vpc-main**: The main VPC for the project.
 ### `aws_subnet`
-- **`sb-public-01`:** Creates a public subnet in the specified availability zone.
-- **`vpc_id`:** Associates the subnet with the main VPC.
-- **`cidr_block`:** Defines the IP address range for the subnet (defined in `variables.tf`).
-- **`availability_zone`:** Specifies the availability zone for the subnet (defined in `variables.tf`).
-- **`enable_resource_name_dns_a_record_on_launch`:** Automatically creates DNS records for instances launched in the subnet.
-- **`map_public_ip_on_launch`:** Assigns public IP addresses to instances launched in the subnet.
-- **`tags`:** Applies tags to the subnet for identification (uses a project name prefix and availability zone name defined in `variables.tf`).
-- **`sb-private-01`:** Creates a private subnet in the specified availability zone.
-- **`vpc_id`:** Associates the subnet with the main VPC.
-- **`cidr_block`:** Defines the IP address range for the subnet (defined in `variables.tf`).
-- **`availability_zone`:** Specifies the availability zone for the subnet (defined in `variables.tf`).
-- **`tags`:** Applies tags to the subnet for identification (uses a project name prefix and availability zone name defined in `variables.tf`).
+Defines subnets within the VPC, categorized into public and private.
+- **sb-public-01**: Public subnet for internet-facing resources.
+- **sb-private-01**: Private subnet for internal resources.
+- **sb-private-02**: Second private subnet in a different availability zone for redundancy.
+### `aws_internet_gateway`
+Creates an internet gateway to connect the VPC to the internet.
+- **igw**: The internet gateway for the project.
+### `aws_nat_gateway`
+Creates a NAT gateway to enable internet access for private resources.
+- **nat**: The NAT gateway associated with the public subnet.
+### `aws_route_table`
+Defines routing rules for network traffic.
+- **rt-public**: Route table for the public subnet, directing traffic to the internet gateway.
+- **rt-private**: Route table for the private subnet, routing traffic through the NAT gateway for internet access.
+### `aws_route_table_association`
+Associates subnets with their respective route tables.
+- **rta-public-01**: Connects the public subnet to the public route table.
+- **rta-private-01**: Connects the first private subnet to the private route table.
+- **rta-private-02**: Connects the second private subnet to the private route table.
 ## Variables
-This file uses variables defined in `variables.tf` for customization. These include:
-- `cidr_block-vpc`: The CIDR block for the VPC.
-- `cidr_block-sb-public01`: The CIDR block for the public subnet.
-- `cidr_block-sb-private01`: The CIDR block for the private subnet.
-- `az-public01`: The availability zone for the public subnet.
-- `az-private01`: The availability zone for the private subnet.
-- `name-az-public01`: The name of the public availability zone.
-- `name-az-private01`: The name of the private availability zone.
-- `project_name_prefix`: A prefix used for resource naming.
-## Usage
-This file is intended to be used as part of a larger Terraform project. It should be applied after the `variables.tf` file has been defined. 
+The file uses variables defined in `variables.tf` to customize the infrastructure configuration. These variables allow for flexibility in deploying the infrastructure across different environments and regions.
 ## Note
 - Ensure that the variables in `variables.tf` are configured according to your environment's requirements.
 - This file defines a basic VPC structure. You may need to modify it to accommodate more complex networking needs.
 
+# 02-eks.tf
+## Description
+This Terraform file defines the resources necessary to provision an Amazon Elastic Kubernetes Service (EKS) cluster within the Virtual Private Cloud (VPC) created in `01-vpc.tf`. It includes the following components:
+- **EKS Cluster**: The core Kubernetes cluster that manages worker nodes and applications.
+- **Node Group**: A set of EC2 instances that form the worker nodes of the cluster.
+- **IAM Roles and Policies**: Necessary permissions for EKS and worker nodes to interact with AWS services.
+- **Security Group**: Controls network access to the worker nodes.
+## Resources Defined
+### `aws_eks_cluster`
+Creates an EKS cluster with the specified configuration, including version, role ARN, and VPC settings.
+- **cluster**: The main EKS cluster for the project.
+### `aws_eks_node_group`
+Defines a node group within the EKS cluster, specifying instance types, desired capacity, and subnets for worker nodes.
+- **nodegroup**: The node group for the cluster, containing worker nodes.
+### `aws_iam_role`
+Creates IAM roles for the EKS cluster and worker nodes.
+- **eks-cluster-role**: Role for the EKS cluster to interact with AWS services.
+- **eks-node-role**: Role for worker nodes to access AWS resources.
+### `aws_iam_role_policy_attachment`
+Attaches necessary policies to the IAM roles.
+- **AmazonEKSClusterPolicy**: Provides permissions for the EKS cluster to manage resources.
+- **AmazonEKSWorkerNodePolicy**: Grants worker nodes access to necessary AWS services.
+- **AmazonEKS_CNI_Policy**: Enables the use of the Amazon VPC CNI plugin for networking.
+- **AmazonEC2ContainerRegistryReadOnly**: Allows worker nodes to pull images from ECR.
+## Variables
+The file uses variables defined in `variables.tf` to customize the EKS cluster configuration, such as cluster version, instance type, node count, and namespace.
+## Note
+- Ensure that the variables in `variables.tf` are configured according to your environment's requirements.
+- This file defines a basic EKS cluster setup. You may need to modify it for more advanced configurations, such as using Fargate profiles or custom AMIs.
+- Remember to configure `kubectl` to access the cluster after creation.
 
 # Other commands
 ### aws configure
@@ -109,8 +136,5 @@ kubectl -n wlopezob run nginx --image=nginx --restart=Never --rm -it -- sh
 apt update
 apt install curl
 ```
-
-## Connect cloud shell on VPC Private
-
 
 

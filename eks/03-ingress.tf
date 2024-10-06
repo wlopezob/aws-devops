@@ -30,9 +30,24 @@ resource "helm_release" "ingress-nginx" {
     name  = "cluster.enabled"
     value = "true"
   }
-  set {
+  /*set {
     name  = "service.beta.kubernetes.io/aws-load-balancer-name"
     value = "${var.project_name_prefix}-nlb"
+  }
+  */
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-name"
+    value = "${var.project_name_prefix}-nlb"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-subnets"
+    value = join(",", [aws_subnet.sb-private-01.id, aws_subnet.sb-private-02.id])
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-additional-resource-tags"
+    value = "Name=${var.project_name_prefix}-nlb"
   }
   depends_on = [aws_eks_node_group.eks-node-group-private]
 }

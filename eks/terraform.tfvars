@@ -19,3 +19,6 @@ cluster_version         = "1.30"
 instance_type           = "t3.medium"
 node_count              = 1
 namespace               = "wlopezob"
+
+### ING ###
+cm-arn                  = "arn:aws:acm:us-west-2:031745324447:certificate/2055b6cd-cde2-4303-bf77-19488bb4a4f0"

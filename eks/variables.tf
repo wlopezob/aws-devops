@@ -69,3 +69,9 @@ variable "namespace" {
   type        = string
   description = "The namespace for the EKS cluster"
 }
+
+### ING ###
+variable "cm-arn" {
+  type        = string
+  description = "The ARN of the certificate manager"
+}

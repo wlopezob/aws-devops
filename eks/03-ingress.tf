@@ -61,6 +61,10 @@ resource "helm_release" "ingress-nginx" {
     value = var.cm-arn
   }
 
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+    value = "internal"
+  }
   depends_on = [aws_eks_node_group.eks-node-group-private]
 }
 

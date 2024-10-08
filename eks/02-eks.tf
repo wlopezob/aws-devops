@@ -8,6 +8,7 @@ resource "aws_eks_cluster" "eks-cluster" {
       aws_subnet.sb-private-01.id,
       aws_subnet.sb-private-02.id
     ]
+    # subnet_ids = [ aws_subnet.sb-public-01.id, aws_subnet.sb-public-02.id ]
     endpoint_private_access = true
     endpoint_public_access  = true
   }
@@ -62,6 +63,7 @@ resource "aws_eks_node_group" "eks-node-group-private" {
     aws_subnet.sb-private-01.id,
     aws_subnet.sb-private-02.id
   ]
+  # subnet_ids = [ aws_subnet.sb-public-01.id, aws_subnet.sb-public-02.id ]
 
   instance_types = [
     "${var.instance_type}"

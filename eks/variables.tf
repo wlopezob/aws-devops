@@ -15,6 +15,10 @@ variable "cidr_block-sb-public01" {
   type        = string
   description = "The CIDR block for subnet public 01"
 }
+variable "cidr_block-sb-public02" {
+  type        = string
+  description = "The CIDR block for subnet public 02"
+}
 variable "cidr_block-sb-private01" {
   type        = string
   description = "The CIDR block for subnet private 01"
@@ -27,6 +31,10 @@ variable "az-public01" {
   type        = string
   description = "The AZ public 01"
 }
+variable "az-public02" {
+  type        = string
+  description = "The AZ public 02"
+}
 variable "az-private01" {
   type        = string
   description = "The AZ private 01"
@@ -38,6 +46,10 @@ variable "az-private02" {
 variable "name-az-public01" {
   type        = string
   description = "The AZ's name public 01"
+}
+variable "name-az-public02" {
+  type        = string
+  description = "The AZ's name public 02"
 }
 variable "name-az-private01" {
   type        = string

@@ -18,6 +18,17 @@ resource "aws_subnet" "sb-public-01" {
   }
 }
 
+resource "aws_subnet" "sb-public-02" {
+  vpc_id                                      = aws_vpc.vpc-main.id
+  cidr_block                                  = var.cidr_block-sb-public02
+  availability_zone                           = var.az-public02
+  enable_resource_name_dns_a_record_on_launch = true
+  map_public_ip_on_launch                     = true
+  tags = {
+    Name = "${var.project_name_prefix}-sb-${var.name-az-public02}"
+  }
+}
+
 resource "aws_subnet" "sb-private-01" {
   vpc_id            = aws_vpc.vpc-main.id
   cidr_block        = var.cidr_block-sb-private01
@@ -89,6 +100,11 @@ resource "aws_route_table" "rt-private" {
 
 resource "aws_route_table_association" "rta-public-01" {
   subnet_id      = aws_subnet.sb-public-01.id
+  route_table_id = aws_route_table.rt-public.id
+}
+
+resource "aws_route_table_association" "rta-public-02" {
+  subnet_id      = aws_subnet.sb-public-02.id
   route_table_id = aws_route_table.rt-public.id
 }
 

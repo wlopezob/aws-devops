@@ -29,11 +29,11 @@ provider "helm" {
 resource "helm_release" "ingress-nginx" {
   name = "ingress-nginx"
   #repository = "https://kubernetes.github.io/ingress-nginx"
-  chart            = "./charts/ingress-nginx-4.11.2"
+  chart            = "./charts/ingress-nginx-4.10.0"
   namespace        = "ingress"
   create_namespace = true
   timeout          = 1800
-  version          = "4.11.2"
+  version          = "4.10.0"
   values = [
     "${file("./ingress-nginx/chart_values.yaml")}"
   ]
@@ -50,6 +50,11 @@ resource "helm_release" "ingress-nginx" {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-subnets"
     value = "${aws_subnet.sb-private-01.id}\\,${aws_subnet.sb-private-02.id}"
   }
+
+  # set {
+  #   name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-subnets"
+  #   value = "${aws_subnet.sb-public-01.id}\\,${aws_subnet.sb-public-02.id}"
+  # }
  
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-additional-resource-tags"
@@ -62,16 +67,22 @@ resource "helm_release" "ingress-nginx" {
   }
 
   set {
-    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
-    value = "internal"
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-internal"
+    value = "true"
   }
+
+  set {
+    name  = "controller.service.internal.enabled"
+    value = "true"
+  }
+  
   depends_on = [aws_eks_node_group.eks-node-group-private]
 }
 
-# data "kubernetes_service" "ingress_nginx" {
-#   metadata {
-#     name      = "ingress-nginx-controller"
-#     namespace = "ingress"
-#   }
-#   depends_on = [helm_release.ingress-nginx]
-# }
+data "kubernetes_service" "ingress_nginx" {
+  metadata {
+    name      = "ingress-nginx-controller"
+    namespace = "ingress"
+  }
+  depends_on = [helm_release.ingress-nginx]
+}

@@ -10,7 +10,6 @@ controller:
       https: http
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: nlb
-      #service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
       service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
@@ -18,8 +17,4 @@ controller:
         if ($http_x_forwarded_proto != 'https') {
           return 301 https://$host$request_uri;
         }
-    # internal:
-    #   enabled: true
-    #   annotations:
-    #     # Create internal NLB
-    #     service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+

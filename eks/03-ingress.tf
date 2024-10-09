@@ -51,11 +51,6 @@ resource "helm_release" "ingress-nginx" {
     value = "${aws_subnet.sb-private-01.id}\\,${aws_subnet.sb-private-02.id}"
   }
 
-  # set {
-  #   name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-subnets"
-  #   value = "${aws_subnet.sb-public-01.id}\\,${aws_subnet.sb-public-02.id}"
-  # }
- 
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-additional-resource-tags"
     value = "Name=${var.project_name_prefix}-nlb"

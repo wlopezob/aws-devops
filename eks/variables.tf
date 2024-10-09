@@ -87,3 +87,13 @@ variable "cm-arn" {
   type        = string
   description = "The ARN of the certificate manager"
 }
+
+### API GATEWAY ###
+variable "custom_domain" {
+  type        = string
+  description = "The custom domain for the API Gateway"
+}
+variable "main_domain" {
+  type = string
+  description = "value for main domain"
+}

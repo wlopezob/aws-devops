@@ -25,3 +25,7 @@ namespace               = "wlopezob"
 
 ### ING ###
 cm-arn                  = "arn:aws:acm:us-west-2:031745324447:certificate/2055b6cd-cde2-4303-bf77-19488bb4a4f0"
+
+### API GATEWAY ###
+custom_domain           = "ms.wilopez.com"
+main_domain             = "wilopez.com"
